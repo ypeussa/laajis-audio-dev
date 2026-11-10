@@ -198,7 +198,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 80
   m_CollisionDetection: 0
 --- !u!136 &8805002683832748549
 CapsuleCollider:
@@ -236,9 +236,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FirstPersonController
   sensitivityX: 1
-  sensitivityY: 1
+  sensitivityY: 0.3
   invertY: 0
-  speed: 1
+  speed: 3
   stepMinInterval: 0.5
   footstepEvent:
     m_PersistentCalls:

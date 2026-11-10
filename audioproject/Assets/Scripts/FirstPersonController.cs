@@ -1,7 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.InputSystem;
 
 public class FirstPersonController : MonoBehaviour {
     public float sensitivityX = 1f;
@@ -13,20 +12,28 @@ public class FirstPersonController : MonoBehaviour {
     float stepTimer = 0f;
     public UnityEvent footstepEvent;
 
+    Rigidbody rb;
     Transform camera;
 
-    void Start() {
+    void Awake() {
         camera = transform.Find("Camera");
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update() {
         stepTimer -= Time.deltaTime;
-        var mouseX = Input.GetAxis("Mouse X") * sensitivityX;
-        var mouseY = Input.GetAxis("Mouse Y") * sensitivityY * (invertY ? 1 : -1);
+        var mouseX = Mouse.current.delta.ReadValue().x * sensitivityX;
+        var mouseY = Mouse.current.delta.ReadValue().y * sensitivityY * (invertY ? 1 : -1);
         transform.Rotate(0, mouseX, 0);
         camera.Rotate(mouseY, 0, 0);
-        var input = Input.GetAxis("Horizontal") * transform.right +
-            Input.GetAxis("Vertical") * transform.forward;
+        float horizInput = ((Keyboard.current.aKey.isPressed || Keyboard.current.leftArrowKey.isPressed) ? -1 : 0) +
+                           ((Keyboard.current.dKey.isPressed || Keyboard.current.rightArrowKey.isPressed) ? 1 : 0);
+        horizInput = Mathf.Clamp(horizInput, -1, 1);
+        float vertInput = ((Keyboard.current.wKey.isPressed || Keyboard.current.upArrowKey.isPressed) ? 1 : 0) +
+                          ((Keyboard.current.sKey.isPressed || Keyboard.current.downArrowKey.isPressed) ? -1 : 0);
+        vertInput = Mathf.Clamp(vertInput, -1, 1);
+        var input = horizInput * transform.right + 
+                        vertInput * transform.forward;
         if (input.magnitude > 1)
             input.Normalize();
         if (input.magnitude > 0.1f) {
@@ -35,6 +42,6 @@ public class FirstPersonController : MonoBehaviour {
                 stepTimer = stepMinInterval;
             }
         }
-        transform.position += input * Time.deltaTime * speed;
+        rb.MovePosition(rb.position + input * Time.deltaTime * speed);
     }
 }
